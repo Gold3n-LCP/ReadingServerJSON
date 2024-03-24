@@ -1,17 +1,16 @@
 const getCrafts = async () => {
   try {
-    return (await fetch("api/crafts/")).json();
-    console.log("api/crafts/").json();
-    console.log("JSON CONTENTS");
+    return await fetch("api/crafts/").json();
   } catch (error) {
-    console.log(errpr);
+    console.log(error);
   }
 };
 
 const showCrafts = async () => {
   let crafts = await getCrafts();
-  const craftList = document.getElementById("char-list");
-  craftList.innerHTML = "";
+  const craftList = document.getElementById("craft-list");
+  craftList.innerHTML = "CRAFTLIST";
+  console.log("Crafts: " + crafts);
   crafts.forEach((craft) => {
     const craftSection = craft.sect;
     craftSection.craft = craft;
@@ -36,3 +35,4 @@ document.querySelectorAll("section").forEach((section) => {
     dialogDetails.append(craft.expandedSect);
   };
 });
+showCrafts();
