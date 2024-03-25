@@ -37,21 +37,61 @@ const showCrafts = async () => {
   }
 };
 
+const getCraft = (craft) => {
+  let superSection = document.createElement("section");
+  superSection.setAttribute("class", "columns");
+
+  let section1 = document.createElement("section");
+  let img = document.createElement("img");
+  img.src = "images/" + crafts[craft].image;
+  section1.append(img);
+  superSection.append(section1);
+
+  let section2 = document.createElement("section");
+  let h1 = document.createElement("h1");
+  h1.innerText = craft.name;
+  section2.append(h1);
+
+  let h3 = document.createElement("h3");
+  h3.innerText = craft.description;
+  section2.append(h3);
+
+  let h2 = document.createElement("h2");
+  h2.innerText = "Supplies: ";
+  section2.append(h2);
+
+  let ul = document.createElement("ul");
+  crafts.supplies.forEach((item) => {
+    let li = document.createElement("li");
+    li.innerText = item;
+    ul.append(li);
+    console.log(item);
+  });
+  section2.append(ul);
+
+  superSection.append(section2);
+
+  return superSection;
+};
 //https://www.w3schools.com/w3css/w3css_modal.asp
-document.querySelectorAll("section").forEach((section) => {
-  section.onclick = (e) => {
-    const craft = e.currentTarget.craft;
-    const dialog = document.getElementById("dialog");
+document.querySelectorAll("img").forEach((img) => {
+  img.onclick = (e) => {
+    console.log("IMG CLICKED");
+    img.innerHTML = "IMAGE";
+    const craftId = img.getAttribute("data-craft-id");
+    const craft = getCraft(craftId);
 
-    dialog.style.display = "block";
+    if (craft) {
+      const dialog = document.getElementById("dialog");
+      dialog.style.display = "block";
 
-    document.querySelector("#dialog-content img").src =
-      e.currentTarget.querySelector("img").src;
+      document.querySelector("#dialog-content img").src = img.src;
 
-    const dialogDetails = document.querySelector("#dialog-details");
+      const dialogDetails = document.querySelector("#dialog-details");
 
-    dialogDetails.innerHTML = "";
-    dialogDetails.append(craft.expandedSect);
+      dialogDetails.innerHTML = "";
+      dialogDetails.appendChild(getCraftElement(craft));
+    }
   };
 });
 showCrafts();
