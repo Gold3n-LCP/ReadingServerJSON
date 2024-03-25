@@ -1,7 +1,6 @@
 const express = require("express");
 const app = express();
 app.use(express.static("public"));
-app.use(express.json());
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -150,13 +149,6 @@ crafts[18] = {
   supplies: ["Broken Crayons", "Mold"],
 };
 crafts[19] = {
-  name: "Straw Farris Wheel",
-  image: "straw-faris-wheel.jpg",
-  description:
-    "It might be too small to ride, but this farris wheel is the most colorful of all.",
-  supplies: ["Multicolored straws", "Platform"],
-};
-crafts[20] = {
   name: "Sunny String",
   image: "sun-string.jpg",
   description:
@@ -168,19 +160,19 @@ crafts[20] = {
     "Yellow and Orange beads",
   ],
 };
-crafts[21] = {
+crafts[20] = {
   name: "Tissue Ballerinas",
   image: "tisue-dancer.jpeg",
   description: "These beautiful dancers will look great on display",
   supplies: ["Pipe cleaner", "Tissue Paper", "Elastics"],
 };
-crafts[22] = {
+crafts[21] = {
   name: "Toilet Paper Roll Animals",
   image: "toilet-paper-animals.jpeg",
   description: "These beautiful dancers will look great on display",
   supplies: ["Toilet Paper Rolls", "Construction Paper", "Googly Eyes"],
 };
-crafts[23] = {
+crafts[22] = {
   name: "Toilet Paper Butterfly",
   image: "toilet-paper-butterfly.jpg",
   description: "Such a sweat little flyer",
@@ -191,7 +183,7 @@ crafts[23] = {
     "Buttons",
   ],
 };
-crafts[24] = {
+crafts[23] = {
   name: "Valentines Jar",
   image: "valentines-jar.webp",
   description: "So much hearts all in one",
