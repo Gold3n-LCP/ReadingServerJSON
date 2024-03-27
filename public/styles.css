@@ -1,5 +1,17 @@
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  background: peachpuff;
+  margin: auto;
+}
+
 #craft-list {
   display: flex;
+  margin: auto;
+}
+
+#content {
+  margin: auto;
+  padding-left: 5%;
 }
 
 .image-container {
@@ -18,4 +30,34 @@
   margin: 0;
   padding: 0;
   margin-bottom: 5px;
+}
+
+#imgSect {
+  margin: 5px;
+}
+
+.craft {
+  padding: 10px;
+  margin: 10px;
+  border: 2px solid navy;
+  background: skyblue;
+}
+
+#add-link {
+  text-decoration: none;
+  color: green;
+  font-size: 50px;
+  animation: pulse 5s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    color: darkgreen;
+  }
+  50% {
+    color: rgb(110, 183, 110);
+  }
+  100% {
+    color: darkgreen;
+  }
 }

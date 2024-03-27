@@ -7,91 +7,146 @@ const getCrafts = async () => {
 };
 
 const showCrafts = async () => {
-  let crafts = await getCrafts();
+  const crafts = await getCrafts();
+  console.log(crafts);
   const craftList = document.getElementById("craft-list");
   craftList.innerHTML = "";
-  console.log("Crafts: " + crafts);
-
-  const craftImages = document.createElement("div");
-  craftImages.classList.add("columns");
-  craftImages.classList.add("image-container");
 
   const numCrafts = crafts.length;
-  const numPerColumn = Math.ceil(numCrafts / 4);
+  const numColumns = 4;
+  const numPerColumn = Math.ceil(numCrafts / numColumns);
 
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < numColumns; i++) {
     const craftImagesContainer = document.createElement("div");
-    craftImagesContainer.classList.add("column"); // Apply CSS class for column styling
+    craftImagesContainer.classList.add("column");
 
-    // Add images to the current column container
     for (
       let j = i * numPerColumn;
       j < Math.min((i + 1) * numPerColumn, numCrafts);
       j++
     ) {
+      const craft = crafts[j]; // Get the craft for this iteration
+      const imgSect = document.createElement("section");
+      imgSect.classList.add("craft");
+      craftImagesContainer.append(imgSect);
+
+      // Making the whole section clickable
+      const a = document.createElement("a");
+      a.href = "#";
+      imgSect.append(a);
+
       const img = document.createElement("img");
-      img.src = "images/" + crafts[j].image;
-      craftImagesContainer.appendChild(img);
+      img.src = "images/" + craft.image;
+      a.append(img);
+
+      a.onclick = (e) => {
+        e.preventDefault();
+        displayDetails(craft);
+      };
     }
+
     craftList.append(craftImagesContainer);
   }
 };
 
-const getCraft = (craft) => {
-  let superSection = document.createElement("section");
-  superSection.setAttribute("class", "columns");
+const displayDetails = (craft) => {
+  openDialog("craft-details");
 
-  let section1 = document.createElement("section");
-  let img = document.createElement("img");
-  img.src = "images/" + crafts[craft].image;
-  section1.append(img);
-  superSection.append(section1);
+  const craftDetails = document.getElementById("craft-details");
+  craftDetails.innerHTML = "";
 
-  let section2 = document.createElement("section");
-  let h1 = document.createElement("h1");
-  h1.innerText = craft.name;
-  section2.append(h1);
+  const h3 = document.createElement("h3");
+  h3.innerHTML = craft.name;
+  craftDetails.append(h3);
 
-  let h3 = document.createElement("h3");
-  h3.innerText = craft.description;
-  section2.append(h3);
+  const p = document.createElement("p");
+  p.innerHTML = craft.description;
+  craftDetails.append(p);
 
-  let h2 = document.createElement("h2");
-  h2.innerText = "Supplies: ";
-  section2.append(h2);
+  const ul = document.createElement("ul");
+  craftDetails.append(ul);
 
-  let ul = document.createElement("ul");
-  crafts.supplies.forEach((item) => {
-    let li = document.createElement("li");
-    li.innerText = item;
+  craft.supplies.forEach((item) => {
+    const li = document.createElement("li");
+    li.innerHTML = item;
     ul.append(li);
-    console.log(item);
   });
-  section2.append(ul);
-
-  superSection.append(section2);
-
-  return superSection;
 };
-//https://www.w3schools.com/w3css/w3css_modal.asp
-document.querySelectorAll("img").forEach((img) => {
-  img.onclick = (e) => {
-    console.log("IMG CLICKED");
-    img.innerHTML = "IMAGE";
-    const craftId = img.getAttribute("data-craft-id");
-    const craft = getCraft(craftId);
 
-    if (craft) {
-      const dialog = document.getElementById("dialog");
-      dialog.style.display = "block";
+const addCraft = async (e) => {
+  e.preventDefault();
+  const form = document.getElementById("add-craft-form");
+  const formData = new FormData(form);
+  let response;
+  formData.append("supplies", getSupplies());
 
-      document.querySelector("#dialog-content img").src = img.src;
+  console.log(...formData);
 
-      const dialogDetails = document.querySelector("#dialog-details");
+  response = await fetch("/api/crafts", {
+    method: "POST",
+    body: formData,
+  });
+  console.log(response);
+  //successfully got data from server
+  if (response.status != 200) {
+    console.log("Error posting data");
+  }
+  await response.json();
+  resetForm();
+  document.getElementById("dialog").style.display = "none";
+  showCrafts();
+};
 
-      dialogDetails.innerHTML = "";
-      dialogDetails.appendChild(getCraftElement(craft));
-    }
-  };
-});
+const getSupplies = () => {
+  const inputs = document.querySelectorAll("#supply-boxes input");
+  let supplies = [];
+
+  inputs.forEach((input) => {
+    supplies.push(input.value);
+  });
+
+  return supplies;
+};
+
+const resetForm = () => {
+  const form = document.getElementById("add-craft-form");
+  form.reset();
+  document.getElementById("supply-boxes").innerHTML = "";
+  document.getElementById("img-prev").src = "";
+};
+
+const showCraftForm = (e) => {
+  e.preventDefault();
+  openDialog("add-craft-form");
+};
+
+const addSupply = (e) => {
+  e.preventDefault();
+  const section = document.getElementById("supply-boxes");
+  const input = document.createElement("input");
+  input.type = "text";
+  section.append(input);
+};
+
+const openDialog = (id) => {
+  document.getElementById("dialog").style.display = "block";
+  document.querySelectorAll("#dialog-details > *").forEach((item) => {
+    item.classList.add("hidden");
+  });
+  document.getElementById(id).classList.remove("hidden");
+};
+
 showCrafts();
+document.getElementById("add-link").onclick = showCraftForm;
+document.getElementById("add-supplies").onclick = addSupply;
+document.getElementById("add-craft-form").onsubmit = addCraft;
+
+document.getElementById("img").onchange = (e) => {
+  if (!e.target.files.length) {
+    document.getElementById("img-prev").src = "";
+    return;
+  }
+  document.getElementById("img-prev").src = URL.createObjectURL(
+    e.target.files.item(0)
+  );
+};
