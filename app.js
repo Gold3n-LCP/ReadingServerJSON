@@ -1,6 +1,27 @@
 const express = require("express");
 const app = express();
+const Joi = require("joi");
+const multer = require("multer");
+
 app.use(express.static("public"));
+app.use("/uploads", express.static("uploads"));
+app.use(express.json());
+
+const cors = require("cors");
+app.use(cors());
+
+//NEED MULTER AND CORS AND JOI STUFF
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, "./public/images/");
+  },
+  filename: (req, file, cb) => {
+    cb(null, file.originalname);
+  },
+});
+
+const upload = multer({ storage: storage });
 
 app.get("/", (req, res) => {
   res.sendFile(__dirname + "/index.html");
@@ -193,6 +214,41 @@ crafts[23] = {
 app.get("/api/crafts", (req, res) => {
   res.send(crafts);
 });
+
+app.post("/api/crafts/", upload.single("img"), (req, res) => {
+  const result = validateCraft(req.body);
+
+  if (result.error) {
+    res.status(400).send(result.error.details[0].message);
+  }
+
+  const craft = {
+    _id: crafts.length + 1,
+    name: req.body.name,
+    description: req.body.description,
+    supplies: req.body.supplies.split(","),
+  };
+
+  if (req.file) {
+    //console.log("+++++++|" + req.file.filename);
+    craft.image = req.file.filename;
+  }
+
+  crafts.push(craft);
+  res.send(crafts);
+});
+
+const validateCraft = (craft) => {
+  const schema = Joi.object({
+    _id: Joi.allow(""),
+    supplies: Joi.allow(""),
+    name: Joi.string().min(3).required(),
+    description: Joi.string().min(3).required(),
+
+    image: Joi.allow(""),
+  });
+  return schema.validate(craft);
+};
 
 app.listen(3001, () => {
   console.log(`listening`);

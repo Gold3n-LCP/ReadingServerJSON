@@ -55,6 +55,10 @@ const displayDetails = (craft) => {
   const craftDetails = document.getElementById("craft-details");
   craftDetails.innerHTML = "";
 
+  const image = document.createElement("img");
+  image.src = "images/" + craft.image;
+  craftDetails.append(image);
+
   const h3 = document.createElement("h3");
   h3.innerHTML = craft.name;
   craftDetails.append(h3);
@@ -77,12 +81,10 @@ const addCraft = async (e) => {
   e.preventDefault();
   const form = document.getElementById("add-craft-form");
   const formData = new FormData(form);
-  let response;
   formData.append("supplies", getSupplies());
-
   console.log(...formData);
 
-  response = await fetch("/api/crafts", {
+  const response = await fetch("api/crafts/", {
     method: "POST",
     body: formData,
   });
@@ -108,16 +110,25 @@ const getSupplies = () => {
   return supplies;
 };
 
-const resetForm = () => {
-  const form = document.getElementById("add-craft-form");
-  form.reset();
-  document.getElementById("supply-boxes").innerHTML = "";
-  document.getElementById("img-prev").src = "";
+const openDialog = (id) => {
+  document.getElementById("dialog").style.display = "block";
+  document.querySelectorAll("#dialog-details > *").forEach((item) => {
+    item.classList.add("hidden");
+  });
+  console.log(document.getElementById(id));
+  document.getElementById(id).classList.remove("hidden");
 };
 
 const showCraftForm = (e) => {
   e.preventDefault();
   openDialog("add-craft-form");
+};
+
+const resetForm = () => {
+  const form = document.getElementById("add-craft-form");
+  form.reset();
+  document.getElementById("supply-boxes").innerHTML = "";
+  document.getElementById("img-prev").src = "";
 };
 
 const addSupply = (e) => {
@@ -126,14 +137,6 @@ const addSupply = (e) => {
   const input = document.createElement("input");
   input.type = "text";
   section.append(input);
-};
-
-const openDialog = (id) => {
-  document.getElementById("dialog").style.display = "block";
-  document.querySelectorAll("#dialog-details > *").forEach((item) => {
-    item.classList.add("hidden");
-  });
-  document.getElementById(id).classList.remove("hidden");
 };
 
 showCrafts();
